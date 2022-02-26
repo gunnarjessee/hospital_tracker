@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,14 +30,14 @@ class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
   final hospitalCard = [
-    HospitalCounter('Pulaski', 0),
-    HospitalCounter('Montgomery', 0),
-    HospitalCounter('NRV', 0),
-    HospitalCounter('Salem', 0),
-    HospitalCounter('Cave', 0),
-    HospitalCounter('RMH', 0),
-    HospitalCounter('Alleghany', 0),
-    HospitalCounter('Out of Town', 0),
+    HospitalCounter('Pulaski'),
+    HospitalCounter('Montgomery'),
+    HospitalCounter('NRV'),
+    HospitalCounter('Salem'),
+    HospitalCounter('Cave'),
+    HospitalCounter('RMH'),
+    HospitalCounter('Alleghany'),
+    HospitalCounter('Out of Town'),
 
   ];
 
@@ -67,9 +70,7 @@ class _HomePage extends State<HomePage> {
 
 class HospitalCounter extends StatefulWidget {
   String name = "";
-  int number = 0;
-
-  HospitalCounter(this.name, this.number, {Key? key}) : super(key: key);
+  HospitalCounter(this.name, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _HospitalCounter();
@@ -79,9 +80,39 @@ class HospitalCounter extends StatefulWidget {
 class _HospitalCounter extends State<HospitalCounter> {
 
   final TextStyle _style = const TextStyle(decoration: TextDecoration.none, color: Colors.greenAccent, fontSize: 20);
+  int _amount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
+
+  void _loadCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      log(_amount);
+      _amount = (prefs.getInt(widget.name) ?? 0);
+    });
+  }
+
+  void _incrementCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    _amount = _amount + 1;
+    prefs.setInt(widget.name, _amount);
+  }
+
+  void _decrementCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_amount > 0) {
+      _amount = _amount - 1;
+    }
+    prefs.setInt(widget.name, _amount);
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Center(
       child: GridView.count(
           crossAxisCount: 4,
@@ -94,7 +125,7 @@ class _HospitalCounter extends State<HospitalCounter> {
               decoration: BoxDecoration(border: Border.all(width: 3.0, color: Colors.greenAccent)),
               child: FittedBox(
                 fit: BoxFit.fitWidth,
-                child: Center(child: Text("" + widget.name.toString(), style: _style,),),
+                child: Center(child: Text("" + widget.name, style: _style,),),
               ),
               height: 50,
             ),
@@ -102,7 +133,8 @@ class _HospitalCounter extends State<HospitalCounter> {
                 decoration: BoxDecoration(border: Border.all(width: 3.0, color: Colors.greenAccent)),
                 child: TextButton(
                 onPressed: () { setState(() {
-                  widget.number++;
+                  _incrementCounter();
+                  _loadCounter();
                 }); },
                 child: const Text("+", style: TextStyle(
                     decoration: TextDecoration.none,
@@ -115,9 +147,8 @@ class _HospitalCounter extends State<HospitalCounter> {
               decoration: BoxDecoration(border: Border.all(width: 3.0, color: Colors.greenAccent)),
               child: TextButton(
                 onPressed: () { setState(() {
-                  if (widget.number > 0) {
-                    widget.number = widget.number - 1;
-                  }
+                  _decrementCounter();
+                  _loadCounter();
                 }); },
                 child: const Text("-", style: TextStyle(
                     decoration: TextDecoration.none,
@@ -128,7 +159,7 @@ class _HospitalCounter extends State<HospitalCounter> {
                 height: 50
             ),
             Container(
-              child: Center(child: Text('' + widget.number.toString(), style: _style,),),
+              child: Center(child: Text('$_amount', style: _style,),),
                 height: 50
             )
           ],
