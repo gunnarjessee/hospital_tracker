@@ -34,6 +34,7 @@ class HomePage extends StatefulWidget {
     HospitalCounter('Cave', 0),
     HospitalCounter('RMH', 0),
     HospitalCounter('Alleghany', 0),
+    HospitalCounter('Out of Town', 0),
 
   ];
 
@@ -52,7 +53,7 @@ class _HomePage extends State<HomePage> {
       body:  MaterialApp(
         debugShowCheckedModeBanner: false,
         home: GridView.count(crossAxisCount: 1,
-          childAspectRatio: 3,
+          childAspectRatio: 3.5,
           primary: false,
           padding: EdgeInsets.all(8),
           mainAxisSpacing: 0,
