@@ -25,7 +25,17 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
-  final hospitals = ['Pulaski', 'Montgomery', 'Alleghany', 'Salem', 'Cave', 'RMH', 'NRV', 'Out of Town'];
+
+  final hospitalCard = [
+    HospitalCounter('Pulaski', 0),
+    HospitalCounter('Montgomery', 0),
+    HospitalCounter('NRV', 0),
+    HospitalCounter('Salem', 0),
+    HospitalCounter('Cave', 0),
+    HospitalCounter('RMH', 0),
+    HospitalCounter('Alleghany', 0),
+
+  ];
 
   @override
   State<StatefulWidget> createState() => _HomePage();
@@ -41,7 +51,13 @@ class _HomePage extends State<HomePage> {
         backgroundColor: Colors.deepOrange,),
       body:  MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HospitalCounter('Pulaski', 10),
+        home: GridView.count(crossAxisCount: 1,
+          childAspectRatio: 3,
+          primary: false,
+          padding: EdgeInsets.all(8),
+          mainAxisSpacing: 0,
+          children: widget.hospitalCard,
+        ),
       ),
     );
   }
@@ -68,13 +84,22 @@ class _HospitalCounter extends State<HospitalCounter> {
     return Center(
       child: GridView.count(
           crossAxisCount: 4,
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+
+          childAspectRatio: 1.0,
           children: [
             Container(
-              width: 1000,
-              child: Center(child: Text("" + widget.name.toString(), style: _style,),),
+              decoration: BoxDecoration(border: Border.all(width: 3.0, color: Colors.greenAccent)),
+              child: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Center(child: Text("" + widget.name.toString(), style: _style,),),
+              ),
+              height: 50,
             ),
             Container(
-              child: TextButton(
+                decoration: BoxDecoration(border: Border.all(width: 3.0, color: Colors.greenAccent)),
+                child: TextButton(
                 onPressed: () { setState(() {
                   widget.number++;
                 }); },
@@ -83,11 +108,15 @@ class _HospitalCounter extends State<HospitalCounter> {
                     color: Colors.greenAccent,
                     fontSize: 24
                 ),),),
+                height: 50
             ),
             Container(
+              decoration: BoxDecoration(border: Border.all(width: 3.0, color: Colors.greenAccent)),
               child: TextButton(
                 onPressed: () { setState(() {
-                  widget.number = widget.number - 1;
+                  if (widget.number > 0) {
+                    widget.number = widget.number - 1;
+                  }
                 }); },
                 child: const Text("-", style: TextStyle(
                     decoration: TextDecoration.none,
@@ -95,9 +124,11 @@ class _HospitalCounter extends State<HospitalCounter> {
                     fontSize: 24
                 ),),
               ),
+                height: 50
             ),
             Container(
               child: Center(child: Text('' + widget.number.toString(), style: _style,),),
+                height: 50
             )
           ],
       ),
